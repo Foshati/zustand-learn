@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+const encrypt = (text) => {
+  return window.btoa(unescape(encodeURIComponent(text)));
+};
+
+const decrypt = (encodedText) => {
+  return decodeURIComponent(escape(window.atob(encodedText)));
+};
+
 export const useCounterStore = create(
   persist(
     (set) => ({
@@ -12,6 +20,8 @@ export const useCounterStore = create(
     {
       name: "count-storage",
       getStorage: () => localStorage,
+      serialize: (state) => encrypt(JSON.stringify(state)),
+      deserialize: (str) => JSON.parse(decrypt(str)),
     }
   )
 );
