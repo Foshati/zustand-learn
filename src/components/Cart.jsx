@@ -1,11 +1,36 @@
 import { useCartStore } from "../stores/useCartStore";
 
 const products = [
-  { id: 1, name: "product 1", price: 40 },
-  { id: 2, name: "product 2", price: 20 },
-  { id: 3, name: "product 3", price: 30 },
-  { id: 4, name: "product 4", price: 130 },
-  { id: 5, name: "product 5", price: 70 },
+  {
+    id: 1,
+    name: "product 1",
+    img: "https://picsum.photos/seed/img6/600/400",
+    price: 40,
+  },
+  {
+    id: 2,
+    name: "product 2",
+    img: "https://picsum.photos/seed/img3/600/400",
+    price: 20,
+  },
+  {
+    id: 3,
+    name: "product 3",
+    img: "https://picsum.photos/seed/img2/600/400",
+    price: 30,
+  },
+  {
+    id: 4,
+    name: "product 4",
+    img: "https://picsum.photos/seed/img1/600/400",
+    price: 130,
+  },
+  {
+    id: 5,
+    name: "product 5",
+    img: "https://picsum.photos/seed/img7/600/400",
+    price: 70,
+  },
 ];
 
 export default function Cart() {
@@ -25,6 +50,12 @@ export default function Cart() {
                 key={product.id}
                 className="flex items-center justify-between mb-2"
               >
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="object-cover w-16 h-16 mr-4"
+                />
+
                 <span>
                   {product.name} - {product.price} USD
                 </span>
