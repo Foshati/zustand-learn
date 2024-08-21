@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCartStore } from "../stores/useCartStore";
-import { ShoppingCart, X } from "lucide-react";
+import { ShoppingBag, ShoppingCart, X } from "lucide-react";
 
 export default function Cart() {
   const {
@@ -23,9 +23,18 @@ export default function Cart() {
     fetchProducts();
   }, []);
 
+  const handleAddToCart = (product) => {
+    const existingItem = cart.find((item) => item.id === product.id);
+    if (existingItem) {
+      updateQuantity(product.id, existingItem.quantity + 1);
+    } else {
+      addToCart(product, 1);
+    }
+  };
+
   return (
     <div className="container p-4 mx-auto">
-      <h1 className="mb-4 text-2xl font-bold">My Store</h1>
+      <h1 className="mb-4 text-2xl font-bold text-red-800 ">p2:My Store</h1>
 
       {/* Cart */}
       <div className="relative">
@@ -108,28 +117,28 @@ export default function Cart() {
       {/* Products */}
       <div>
         <h2 className="mb-2 text-xl font-semibold">Products</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4">
           {products.map((product) => (
             <div
               key={product.id}
-              className="card bg-base-100 shadow-sm image-full"
+              className="card card-compact bg-black shadow-xl m-2 p-4"
             >
-              <figure>
+              <figure className="flex justify-center">
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="h-28 object-cover"
+                  className="h-40 w-40 object-cover rounded-lg"
                 />
               </figure>
-              <div className="card-body p-2">
+              <div className="card-body p-2 text-center">
                 <h2 className="card-title text-sm">{product.title}</h2>
                 <p className="text-sm">{product.price} USD</p>
-                <div className="card-actions justify-end">
+                <div className="card-actions justify-center">
                   <button
-                    onClick={() => addToCart(product, 1)}
+                    onClick={() => handleAddToCart(product)}
                     className="btn btn-primary btn-sm"
                   >
-                    Add to Cart
+                    <ShoppingBag />
                   </button>
                 </div>
               </div>
