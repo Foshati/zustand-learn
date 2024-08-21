@@ -5,15 +5,29 @@ export const useCartStore = create(
   persist(
     (set, get) => ({
       cart: [],
-      addToCart: (product) =>
-        set((state) => ({ cart: [...state.cart, product] })),
+      addToCart: (product, quantity = 1) =>
+        set((state) => ({
+          cart: [
+            ...state.cart.filter((item) => item.id !== product.id),
+            { ...product, quantity },
+          ],
+        })),
       removeFromCart: (productId) =>
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== productId),
         })),
+      updateQuantity: (productId, quantity) =>
+        set((state) => ({
+          cart: state.cart.map((item) =>
+            item.id === productId ? { ...item, quantity } : item
+          ),
+        })),
       clearCart: () => set({ cart: [] }),
       getTotalPrice: () => {
-        return get().cart.reduce((sum, item) => sum + item.price, 0);
+        return get().cart.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
       },
     }),
     {

@@ -1,104 +1,130 @@
+import { useEffect, useState } from "react";
 import { useCartStore } from "../stores/useCartStore";
 
-const products = [
-  {
-    id: 1,
-    name: "product 1",
-    img: "https://picsum.photos/seed/img6/600/400",
-    price: 40,
-  },
-  {
-    id: 2,
-    name: "product 2",
-    img: "https://picsum.photos/seed/img3/600/400",
-    price: 20,
-  },
-  {
-    id: 3,
-    name: "product 3",
-    img: "https://picsum.photos/seed/img2/600/400",
-    price: 30,
-  },
-  {
-    id: 4,
-    name: "product 4",
-    img: "https://picsum.photos/seed/img1/600/400",
-    price: 130,
-  },
-  {
-    id: 5,
-    name: "product 5",
-    img: "https://picsum.photos/seed/img7/600/400",
-    price: 70,
-  },
-];
-
 export default function Cart() {
-  const { cart, addToCart, removeFromCart, clearCart, getTotalPrice } =
-    useCartStore();
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getTotalPrice,
+  } = useCartStore();
+  const [products, setProducts] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await fetch("https://fakestoreapi.com/products");
+      const data = await response.json();
+      setProducts(data);
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <div className="container p-4 mx-auto">
       <h1 className="mb-4 text-2xl font-bold">My Store</h1>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Sidebar - Products */}
         <div>
           <h2 className="mb-2 text-xl font-semibold">Products</h2>
-          <ul>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1">
             {products.map((product) => (
-              <li
+              <div
                 key={product.id}
-                className="flex items-center justify-between mb-2"
+                className="card bg-base-100 shadow-xl image-full"
               >
-                <img
-                  src={product.img}
-                  alt={product.name}
-                  className="object-cover w-16 h-16 mr-4"
-                />
-
-                <span>
-                  {product.name} - {product.price} USD
-                </span>
-                <button
-                  onClick={() => addToCart(product)}
-                  className="btn btn-primary btn-sm"
-                >
-                  Add to Cart
-                </button>
-              </li>
+                <figure>
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="h-32 object-cover"
+                  />
+                </figure>
+                <div className="card-body">
+                  <h2 className="card-title text-sm">{product.title}</h2>
+                  <p>{product.price} USD</p>
+                  <div className="card-actions justify-end">
+                    <button
+                      onClick={() => addToCart(product, 1)}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
+        {/* Cart */}
         <div>
-          <h2 className="mb-2 text-xl font-semibold">Cart</h2>
-          {cart.length === 0 ? (
-            <p>The cart is empty</p>
-          ) : (
-            <>
-              <ul>
-                {cart.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex items-center justify-between mb-2"
-                  >
-                    <span>
-                      {item.name} - {item.price} USD
-                    </span>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="btn btn-error btn-sm"
-                    >
-                      Remove
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => setShowCart(!showCart)}
+              className="btn btn-primary"
+            >
+              {showCart ? "Close Cart" : "Open Cart"}
+            </button>
+            <div className="badge badge-primary ml-2">{cart.length}</div>
+          </div>
+          {showCart && (
+            <div>
+              <h2 className="mb-2 text-xl font-semibold">Cart</h2>
+              {cart.length === 0 ? (
+                <p>The cart is empty</p>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div
+                        key={item.id}
+                        className="card bg-base-100 shadow-xl flex items-center justify-between"
+                      >
+                        <div className="card-body">
+                          <h2 className="card-title text-sm">{item.title}</h2>
+                          <p>{item.price} USD</p>
+                          <div className="card-actions justify-start">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
+                              className="btn btn-error btn-sm"
+                              disabled={item.quantity <= 1}
+                            >
+                              -
+                            </button>
+                            <span className="mx-2">{item.quantity}</span>
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
+                              className="btn btn-primary btn-sm"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="btn btn-error btn-sm mr-4"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center mt-4">
+                    <p className="font-bold">Total: {getTotalPrice()} USD</p>
+                    <button onClick={clearCart} className="btn btn-warning">
+                      Clear Cart
                     </button>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-4 font-bold">Total: {getTotalPrice()} USD</p>
-              <button onClick={clearCart} className="mt-2 btn btn-warning">
-                Clear Cart
-              </button>
-            </>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
       </div>
