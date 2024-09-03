@@ -5,6 +5,7 @@ export const useCartStore = create(
   persist(
     (set, get) => ({
       cart: [],
+
       addToCart: (product, quantity = 1) =>
         set((state) => ({
           cart: [
@@ -12,17 +13,25 @@ export const useCartStore = create(
             { ...product, quantity },
           ],
         })),
+
+
       removeFromCart: (productId) =>
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== productId),
         })),
+
+
       updateQuantity: (productId, quantity) =>
         set((state) => ({
           cart: state.cart.map((item) =>
             item.id === productId ? { ...item, quantity } : item
           ),
         })),
+
+
       clearCart: () => set({ cart: [] }),
+
+
       getTotalPrice: () => {
         return get().cart.reduce(
           (sum, item) => sum + item.price * item.quantity,

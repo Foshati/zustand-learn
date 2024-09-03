@@ -6,11 +6,15 @@ import Header from "./components/header";
 function App() {
   return (
     <>
-      <Header />
       <Router>
+        <Header />
         <Routes>
           <Route path="/" element={<Counter />} />
           <Route path="/cart" element={<Cart />} />
+          <Route
+            path="*"
+            element={<h2 className="text-red-400"> Not Found 404</h2>}
+          />
         </Routes>
       </Router>
     </>
